@@ -23,7 +23,8 @@ const userSchema = mongoose.Schema({
       required: [true, 'Please add a phone number']
     },
     role: {
-      type: String
+      type: String,
+      default: 'user'
     },
     profile_picture: {
       type: String
@@ -34,9 +35,6 @@ const userSchema = mongoose.Schema({
     status: {
       type: String,
       required: true
-    },
-    nationality: {
-      type: String
     },
     bookings: [
       {

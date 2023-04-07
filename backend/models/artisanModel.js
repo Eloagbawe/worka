@@ -26,7 +26,8 @@ const artisanSchema = mongoose.Schema({
       type: String
     },
     role: {
-      type: String
+      type: String,
+      default: 'artisan'
     },
     craft: {
       type: mongoose.Schema.Types.ObjectId,
