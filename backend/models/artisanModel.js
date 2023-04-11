@@ -59,10 +59,16 @@ const artisanSchema = mongoose.Schema({
       type: String,
       required: true
     },
-    work_pictures: [{
-      type: String,
-      required: [true, 'Please add at least two pictures of your work']
-    }],
+    work_pictures: {
+      work_image_1: {
+        type: String,
+        required: [true, 'Please add at least two pictures of your work']
+      },
+      work_image_2: {
+        type: String,
+        required: [true, 'Please add at least two pictures of your work']
+      },
+    },
     bookings: [
       {
         type: mongoose.Schema.Types.ObjectId,
