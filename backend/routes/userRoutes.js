@@ -1,9 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { createUser } = require('../controllers/userController')
+const { createUser, loginUser, getMe, updateProfile, getProfile } = require('../controllers/userController')
 const { protect } = require('../middleware/auth')
-const { upload } = require('../services/imageUpload');
 
-router.post('/create_account', upload, createUser);
+router.post('/create_account', createUser);
+router.post('/login', loginUser);
+router.get('/me', protect, getMe);
+router.put('/update', protect, updateProfile);
+router.get('/:id', protect, getProfile);
 
 module.exports = router;
