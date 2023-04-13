@@ -19,6 +19,7 @@ app.use('/api/v1/users', require('./routes/userRoutes'));
 app.use('/api/v1/crafts', require('./routes/craftRoutes'));
 app.use('/api/v1/locations', require('./routes/locationRoutes'));
 app.use('/api/v1/reviews', require('./routes/reviewRoutes'));
+app.use('/api/v1/bookings', require('./routes/bookingRoutes'));
 
 app.use(errorHandler);
 app.listen(port, () => {
