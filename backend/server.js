@@ -15,6 +15,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(upload);
+app.use('/api/v1', require('./routes/blankRoutes'));
 app.use('/api/v1/users', require('./routes/userRoutes'));
 app.use('/api/v1/crafts', require('./routes/craftRoutes'));
 app.use('/api/v1/locations', require('./routes/locationRoutes'));
