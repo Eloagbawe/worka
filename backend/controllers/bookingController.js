@@ -1,7 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const Booking = require('../models/bookingModel');
 const Artisan = require('../models/artisanModel');
-const User = require('../models/userModel');
 
 const createBooking = asyncHandler(async (req, res) => {
   const { role } = req.user;
@@ -45,6 +44,11 @@ const createBooking = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error('Booking Times are by the hour e.g: 12:00')
   }
+
+  if (bookingDate.getDay() === 0) {
+    res.status(400);
+    throw new Error('No bookings on a Sunday')
+  }
   
   const bookingExists = await Booking.findOne({ date: bookingDate, artisanId: id });
 
@@ -85,15 +89,19 @@ const getBookedDates = asyncHandler(async (req, res) => {
     throw new Error('Artisan not found');
   }
 
+  // const currentDate = moment(new Date()).format('YYYY-MM-DD[T00:00:00.000Z]');
   const currentDate = new Date();
   const bookedDates = {};
 
   artisan.bookings.forEach(booking => {
-    if (booking.date.getMonth() === currentDate.getMonth()) {
-      if (bookedDates[booking.date.getDate()]) {
-        bookedDates[booking.date.getDate()].push(booking.date.getHours())
+    if (booking.date >= currentDate) {
+      const day = booking.date.getDate();
+      const month = booking.date.getMonth() + 1;
+      const year = booking.date.getFullYear();
+      if (bookedDates[`${day}/${month}/${year}`]) {
+        bookedDates[`${day}/${month}/${year}`].push(booking.date.getHours())
       } else {
-        bookedDates[booking.date.getDate()] = [booking.date.getHours()]
+        bookedDates[`${day}/${month}/${year}`] = [booking.date.getHours()]
       }
     }
   })
@@ -101,7 +109,37 @@ const getBookedDates = asyncHandler(async (req, res) => {
 })
 
 const getBookings = asyncHandler(async (req, res) => {
-  res.status(200).json(req.user.bookings);
+  const { role } = req.user;
+
+  const currentDate = new Date();
+
+  let currentBookings;
+  let pastBookings;
+
+  if (role === 'user') {
+    currentBookings = await Booking.find({userId: req.user._id, date: {$gte: currentDate}})
+    .select('-__v')
+    .populate({path: 'artisanId', select: 'first_name last_name profile_picture',
+              populate: {path: 'craft location', select: 'name city state'}})
+
+    pastBookings = await Booking.find({userId: req.user._id, date: {$lt: currentDate}})
+    .select('-__v')
+    .populate({path: 'artisanId', select: 'first_name last_name profile_picture',
+              populate: {path: 'craft location', select: 'name city state'}})
+
+  }
+
+  if (role === 'artisan') {
+    currentBookings = await Booking.find({artisanId: req.user._id, date: {$gte: currentDate}})
+    .select('-__v')
+    .populate({path: 'userId', select: 'first_name last_name profile_picture'})
+
+    pastBookings = await Booking.find({artisanId: req.user._id, date: {$lt: currentDate}})
+    .select('-__v')
+    .populate({path: 'userId', select: 'first_name last_name profile_picture'})
+
+  }
+  res.status(200).json({currentBookings, pastBookings});
 })
 
 const deleteBooking = asyncHandler(async (req, res) => {
