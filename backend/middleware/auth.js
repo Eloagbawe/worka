@@ -18,11 +18,16 @@ const protect = asyncHandler(async (req, res, next) => {
       const decoded = jwt.verify(token, process.env.JWT_SECRET)
       const role = decoded.role;
 
-      // Get user from token
+      // Get user details from token
       if (role === 'user') {
-        req.user = await User.findById(decoded.id).select('-password').populate({path: 'reviews'}).populate('bookings');
+        req.user = await User.findById(decoded.id).select('-password -__v')
+       
       } else {
-        req.user = await Artisan.findById(decoded.id).select('-password').populate({path: 'reviews'}).populate('bookings');
+        req.user = await Artisan.findById(decoded.id).select('-password -__v')
+      }
+      if (!req.user) {
+        res.status(401)
+        throw new Error('User not found')
       }
       next();
     } catch (err) {
