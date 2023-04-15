@@ -5,8 +5,11 @@ const User = require('../models/userModel');
 const Artisan = require('../models/artisanModel');
 const Craft = require('../models/craftModel');
 const Location = require('../models/locationModel');
+const Booking = require('../models/bookingModel');
+const Review = require('../models/reviewModel');
 const { bufferToDataURI } = require('../services/imageUpload');
 const { uploader } = require('../config/cloudinaryConfig');
+const mongoose = require('mongoose')
 
 
 
@@ -55,7 +58,8 @@ const createUser = asyncHandler(async (req, res) => {
       const { fieldname, mimetype, buffer } = profile_picture[0];
       const fileFormat = mimetype.split('/')[1];
       const fileData = bufferToDataURI(`.${fileFormat}`, buffer).content;
-      const result = await uploader.upload(fileData, { public_id: `worka/${email}_${fieldname}`});
+      const result = await uploader.upload(fileData,
+        { public_id: `${process.env.CLOUDINARY_FOLDER_NAME}/${email}_${fieldname}`});
   
       //save user
       const user = await User.create({
@@ -120,7 +124,7 @@ const createUser = asyncHandler(async (req, res) => {
           const { fieldname, mimetype, buffer } = file;
           const fileFormat = mimetype.split('/')[1];
           const fileData = bufferToDataURI(`.${fileFormat}`, buffer).content;
-          const result = await uploader.upload(fileData, { public_id: `worka/${email}_${fieldname}`});
+          const result = await uploader.upload(fileData, { public_id: `${process.env.CLOUDINARY_FOLDER_NAME}/${email}_${fieldname}`});
           imageUrls[fieldname] = result.url;
         }
 
@@ -188,47 +192,23 @@ const loginUser = asyncHandler(async (req, res) => {
 })
 
 const getMe = asyncHandler(async (req, res) => {
-  const { _id, first_name, last_name, phone,
-    role, status, email, profile_picture,
-    bookings, reviews} = req.user;
+  // Get dashboard details from req.user
+
+  const { role } = req.user;
 
   if (role === 'user') {
-    res.status(200).json({
-      id: _id,
-      first_name,
-      last_name,
-      role,
-      email,
-      phone,
-      profile_picture,
-      bookings,
-      reviews,
-      status,
-    })
+    await req.user.populate({path: 'reviews bookings', select: 'date text rating createdAt', 
+          populate: {path: 'artisanId', select: 'first_name last_name profile_picture',
+          populate: {path: 'craft location', select: 'name city state'}}})
   }
 
   if (role === 'artisan') {
-    const { location, craft, business_name,
-      business_address, work_pictures } = req.user;
-
-    res.status(200).json({
-      id: _id,
-      first_name,
-      last_name,
-      role,
-      email,
-      phone,
-      profile_picture,
-      bookings,
-      reviews,
-      status,
-      craft,
-      business_name,
-      business_address,
-      location,
-      work_pictures
-    })
+    await req.user.populate({path: 'reviews bookings', select: 'date text rating createdAt',
+        populate: {path: 'userId', select: 'first_name last_name profile_picture'}})
+    await req.user.populate({path: 'craft location', select: 'name city state'})
   }
+  
+  res.status(200).json(req.user);
 })
 
 const updateProfile = asyncHandler(async (req, res) => {
@@ -247,7 +227,7 @@ const updateProfile = asyncHandler(async (req, res) => {
         }
         const fileFormat = mimetype.split('/')[1];
         const fileData = bufferToDataURI(`.${fileFormat}`, buffer).content;
-        const result = await uploader.upload(fileData, { public_id: `worka/${req.user.email}_${fieldname}`});
+        const result = await uploader.upload(fileData, { public_id: `${process.env.CLOUDINARY_FOLDER_NAME}/${req.user.email}_${fieldname}`});
         imageUrls[fieldname] = result.url;
       }
     }
@@ -290,20 +270,36 @@ const getProfile = asyncHandler(async (req, res) => {
 
   if (role === 'user') {
     const artisan = await Artisan.findById(id)
-    .select('-password -updatedAt -__v');
+    .select('-password -updatedAt -__v')
+    .populate({path: 'reviews', select: 'text rating', populate: {path: 'userId',
+    select: 'first_name last_name profile_picture'}});
 
     if (!artisan) {
-      res.status(400);
-      throw new Error('Artisan not found!');
+      res.status(404);
+      throw new Error('Artisan not found');
     }
-    res.status(200).json(artisan);
+    
+    const review = await Review.findOne({ artisanId: artisan._id, userId: req.user.id})
+    .select('-__v')
+    .populate({path: 'artisanId', select: 'first_name last_name profile_picture',
+    populate: {path: 'craft location', select: 'name city state'}})
+
+    res.status(200).json({ ...artisan.toObject(), review: review ? review : null})
+
   }
   else if (role === 'artisan') {
+    const bookingExists = await Booking.findOne({ artisanId: req.user._id, userId: id});
+
+    if (!bookingExists) {
+      res.status(401);
+      throw new Error('Not authorized');
+    }
+
     const user = await User.findById(id)
     .select('-password -reviews -bookings -updatedAt -__v');
 
     if (!user) {
-      res.status(400);
+      res.status(404);
       throw new Error('User not found');
     }
     res.status(200).json(user);
@@ -314,4 +310,44 @@ const getProfile = asyncHandler(async (req, res) => {
 
 })
 
-module.exports = { createUser, loginUser, getMe, updateProfile, getProfile };
+const searchArtisan = asyncHandler(async (req, res) => {
+  const { page=0 } = req.query;
+  const { craftId, locationId } = req.body;
+
+  const { role } = req.user;
+
+  if (role !== 'user') {
+    res.status(401);
+    throw new Error('Not authorized');
+  }
+
+  let query = {}
+
+  if (craftId) {
+    query['craft'] = new mongoose.Types.ObjectId(craftId);
+  }
+
+  if (locationId) {
+    query['location'] = new mongoose.Types.ObjectId(locationId);
+  }
+
+  const artisans = await Artisan.aggregate([
+    { $match: query },
+    { $skip: parseInt(page, 10) * 10 },
+    { $limit: 10 },
+    { 
+      $sort: { "rating": -1 } 
+    },
+    {
+      $project: {
+        password: 0, __v: 0, bookings: 0, reviews: 0
+      },
+    }
+  ])
+  const result = await Artisan.populate(artisans, {path: 'craft location', select: 'name city state country'});
+
+  res.status(200).send(result);
+
+})
+
+module.exports = { createUser, loginUser, getMe, updateProfile, getProfile, searchArtisan };
