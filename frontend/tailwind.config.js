@@ -15,6 +15,7 @@ module.exports = {
       colors: {
         "text-color": "var(--text)",
         "main-bg": "var(--main-background)",
+        "search-btn-bg": "var(--search-btn-bg)"
       }
     },
   },

@@ -10,11 +10,13 @@
 :root {
   --main-background: #fdfdfd;
   --text: #0A4D68;
+  --search-btn-bg: #2E3840;
 }
 
 :root.dark {
   --main-background: #1f2937;
   --text: #fdfdfd;
+  --search-btn-bg: #4E6E81;
 }
 
 body {
