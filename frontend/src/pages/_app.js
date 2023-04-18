@@ -3,7 +3,8 @@ import { useEffect } from 'react';
 import { addDarkTheme } from '@/_helpers/set_theme';
 import { NavBar } from '@/components/NavBar';
 import { ThemeProvider} from '@mui/material/styles';
-import { THEME } from '@/styles/material_theme'
+import { THEME } from '@/styles/material_theme';
+import { Footer } from '@/components/Footer';
 
 export default function App({ Component, pageProps }) {
   useEffect(() => {
@@ -20,6 +21,7 @@ export default function App({ Component, pageProps }) {
       <ThemeProvider theme={THEME}>
         <NavBar/>
         <Component {...pageProps} />
+        <Footer/>
       </ThemeProvider>
     </>
   )
