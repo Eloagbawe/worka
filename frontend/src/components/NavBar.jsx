@@ -3,9 +3,11 @@ import { toggleDarkTheme } from '@/_helpers/set_theme';
 import { BsSun, BsMoonFill } from 'react-icons/bs';
 import { FaAlignJustify } from 'react-icons/fa';
 import { IconContext } from "react-icons";
-import Image from 'next/image'
+import Image from 'next/image';
 import Link from 'next/link';
 import lightLogo from '../../public/images/logo-light.png'
+// import lightLogo from '../../public/images/logo-dup.png'
+
 import darkLogo from '../../public/images/logo-dark.png'
 
 import Button from '@mui/material/Button';
@@ -129,7 +131,7 @@ export const NavBar = () => {
         {theme === 'dark' && 
         <IconContext.Provider  value={{ size: '20px' }}>
             
-            <BsSun onClick={() => setLightTheme()} className='text-text-color mx-6'/>
+            <BsSun onClick={() => setLightTheme()} className='text-[#05BFDB] mx-6'/>
 
         </IconContext.Provider>}
 
