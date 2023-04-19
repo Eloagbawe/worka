@@ -5,9 +5,10 @@ import { FaAlignJustify } from 'react-icons/fa';
 import { IconContext } from "react-icons";
 import Image from 'next/image';
 import Link from 'next/link';
-import lightLogo from '../../public/images/logo-light.png'
-// import lightLogo from '../../public/images/logo-dup.png'
+import { useRouter } from 'next/router'
 
+
+import lightLogo from '../../public/images/logo-light.png'
 import darkLogo from '../../public/images/logo-dark.png'
 
 import Button from '@mui/material/Button';
@@ -16,9 +17,12 @@ import MenuItem from '@mui/material/MenuItem';
 
 
 export const NavBar = () => {
+  const router = useRouter();
   const [theme, setTheme] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+  const path = router.pathname;
+
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -46,9 +50,11 @@ export const NavBar = () => {
     setTheme('light');
   }
 
+  const isCreateAccountPage = path.startsWith('/create_account');
+
   
   return (
-    <div className='flex sm:px-8 py-4 items-center justify-between'>
+    <div className='flex px-3 sm:px-8 py-4 items-center justify-between'>
       <div className='flex items-center'>
        <div className=''>
       <Button
@@ -97,16 +103,17 @@ export const NavBar = () => {
           }
         }}
       >
+        {path !== '/' && <Link href="/"><MenuItem>Home</MenuItem></Link>}
         <MenuItem>About</MenuItem>
         <MenuItem>Contact us</MenuItem>
-        <MenuItem>About</MenuItem>
-        <MenuItem>Search</MenuItem>
+        {path !=='/search' && <Link href="/search"><MenuItem>Search</MenuItem></Link>}
         <MenuItem>Blog</MenuItem>
 
-        <div className='min-[500px]:hidden'>
-          <button className="ml-2 px-3 py-2 block rounded bg-[#EA5455] text-white font-bold">Sign Up</button>
-          <button className="ml-2 px-3 py-2 block font-bold text-text-color">Log in</button>
+        <div className='min-[500px]:hidden mb-3'>
+          {!isCreateAccountPage && <Link href="/create_account"><button className="ml-2 px-3 py-2 block rounded bg-[#EA5455] text-white font-bold">Sign Up</button></Link>}
+          {path !== '/login' && <Link href="/login"><button className="ml-2 px-3 py-2 block font-bold text-text-color">Log in</button></Link>}
         </div>
+
       </Menu>
       </div>
   
@@ -120,9 +127,10 @@ export const NavBar = () => {
       </div>
 
       <div className='hidden lg:block'>
+        {router.asPath !== '/' && <Link href="/" className='mr-6 text-text-color font-bold'>Home</Link>}
         <Link href="" className='mr-6 text-text-color font-bold'>About</Link>
         <Link href="" className='mr-6 text-text-color font-bold'>Contact us</Link>
-        <Link href="" className='mr-6 text-text-color font-bold'>Search</Link>
+        {path !== '/search' && <Link href="/search" className='mr-6 text-text-color font-bold'>Search</Link>}
         <Link href="" className='mr-6 text-text-color font-bold'>Blog</Link>
       </div>
 
@@ -144,9 +152,10 @@ export const NavBar = () => {
         </div>
 
         <div className='hidden min-[500px]:block'>
-          <button className="px-5 py-2 rounded bg-[#EA5455] text-white font-bold">Sign Up</button>
-          <button className="px-5 py-2 font-bold text-text-color">Log in</button>
+          {!isCreateAccountPage && <Link href="/create_account"><button className="px-5 py-2 rounded bg-[#EA5455] text-white font-bold">Sign Up</button></Link>}
+          {path !== '/login' && <Link href="/login"><button className="px-5 py-2 font-bold text-text-color">Log in</button></Link>}
         </div>
+
         
       </div>
     </div>
