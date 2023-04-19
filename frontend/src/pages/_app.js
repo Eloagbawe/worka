@@ -19,9 +19,11 @@ export default function App({ Component, pageProps }) {
   return (
     <>
       <ThemeProvider theme={THEME}>
+        <div className='h-screen'>
         <NavBar/>
-        <Component {...pageProps} />
+          <Component {...pageProps} />
         <Footer/>
+        </div>
       </ThemeProvider>
     </>
   )
