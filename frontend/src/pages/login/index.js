@@ -1,30 +1,86 @@
-import React, {useState} from 'react';
-import { ImageCarousel } from '@/components/ImageCarousel';
+import React, { useState, useEffect } from 'react';
 import { FaEye, FaEyeSlash} from 'react-icons/fa';
 import { useRouter } from 'next/router';
+import { toast } from "react-toastify";
+import { useSelector, useDispatch } from "react-redux";
+import { ImageCarousel } from '@/components/ImageCarousel';
+import { Spinner } from '@/components/Spinner';
+
+import { login, reset } from '@/store/auth/authSlice';
 
 
-const login = () => {
+
+const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+  const dispatch = useDispatch();
+
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  })
+
+  const {user, isLoading, isError, isSuccess, message} = useSelector((state) => state.auth)
+  const {email, password} = formData
+
+
+  useEffect(() => {
+    if (isError) {
+      toast.error(message)
+    }
+
+    if (isSuccess) {
+      toast.success('login sucessful!')
+    }
+    if (user) {
+      toast.success('login sucessful!')
+      router.push('/dashboard');
+    }
+  }, [user, isError, isSuccess, message, dispatch])
+  const onChange = (e) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      [e.target.name]: e.target.value
+    }))
+  }
+
+  const onSubmit = (e) => {
+    e.preventDefault()
+    if (email.length === 0 || password.length === 0){
+      toast.error('Please fill in all details')
+    } else {
+      const userData = {email, password}
+      dispatch(login(userData))
+      setFormData({
+        email: '',
+        password: ''
+      })
+    }
+  }
+
+  if (isLoading) {
+    return (<Spinner/>)
+  }
 
   return (
     <div className='px-4 sm:px-12 py-4 lg:grid grid-cols-2 gap-4 items-center justify-center text-text-color'>
       <div className='p-4 sm:p-6 xl:p-12'>
         <h2 className='font-bold  text-[2rem]'>Login to your account</h2>
         <div className='my-10'>
-          <form className='w-full sm:w-2/3'>
+          <form className='w-full sm:w-2/3' onSubmit={onSubmit}>
             <div className='my-5 rounded border p-1'>
-              <input type='email' className='p-2 w-full focus:outline-0 bg-transparent' placeholder='email'/>
+              <input type='email' className='p-2 w-full focus:outline-0 bg-transparent' placeholder='email'
+              value={email} id="email" name="email" onChange={onChange}/>
             </div>
             <div className='my-5 relative rounded border p-1'>
-              <input type={`${showPassword ? 'text' : 'password'}`} className='p-2 pr-12 sm:pr-16 w-full focus:outline-0 bg-transparent' placeholder='password'/>
+              <input type={`${showPassword ? 'text' : 'password'}`} className='p-2 pr-12 sm:pr-16 w-full focus:outline-0 bg-transparent'
+              placeholder='password' id="password" name="password" value={password} onChange={onChange}/>
               {!showPassword && <FaEye className='absolute top-[35%] right-[10%]' onClick={() => setShowPassword(true)}/>}
               {showPassword && <FaEyeSlash className='absolute top-[35%] right-[10%]' onClick={() => setShowPassword(false)}/>}
             </div>
 
             <div className='mt-10 my-5'>
-              <button className='px-12 py-2 text-xl rounded-xl bg-btn-bg text-white'>Log In</button>
+              <button type="submit" className='px-12 py-2 text-xl rounded-xl bg-btn-bg text-white'>Log In</button>
             </div>
           </form>
         </div>
@@ -43,4 +99,4 @@ const login = () => {
   )
 }
 
-export default login
+export default Login
