@@ -41,7 +41,7 @@ const getLocation = asyncHandler(async (req, res) => {
 
 const getLocations = asyncHandler(async (req, res) => {
     try {
-      const location = await Location.find().select('-createdAt -updatedAt -__v');
+      const location = await Location.find().select('-createdAt -updatedAt -__v').sort('name');
       res.status(200).json(location);
     } catch (err) {
       res.status(400).json({ message: 'An error occurred' });
