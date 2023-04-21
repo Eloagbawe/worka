@@ -1,6 +1,5 @@
 import React from 'react'
-import logo from '../../public/images/logo-dup.png';
-import Image from 'next/image';
+import logo from '../images/logo-dup.png';
 
 export const Footer = () => {
   return (
@@ -9,23 +8,23 @@ export const Footer = () => {
        <div className='min-[475px]:flex px-4 sm:px-12 my-5'>
 
         <div className='w-1/4'>
-            <Image src={logo} alt="logo" priority className='w-32 max-[475px]:w-20 max-[475px]:h-6 max-[320px]:h-5 h-9'/>
+            <img src={logo} alt="logo" className='w-32 max-[475px]:w-20 max-[475px]:h-6 max-[320px]:h-5 h-9'/>
         </div>
         <div className='flex max-[475px]:mt-5 max-[475px]:justify-between min-[475px]:justify-around min-[475px]:w-3/4'>
         <div className=''>
 
             <h5 className='text-lg font-bold'>Useful Links</h5>
-            <a className='block'>FAQs</a>
-            <a className='block'>Support</a>
-            <a className='block'>Pricing</a>
+            <a className='block' href="##">FAQs</a>
+            <a className='block' href="##">Support</a>
+            <a className='block' href="##">Pricing</a>
 
         </div>
 
         <div className=''>
             <h5 className='text-lg font-bold'>Social Links</h5>
-            <a className='block'>Twitter</a>
-            <a className='block'>Facebook</a>
-            <a className='block'>Instagram</a>
+            <a className='block' href="##">Twitter</a>
+            <a className='block' href="##">Facebook</a>
+            <a className='block' href="##">Instagram</a>
         </div>
         </div>
 

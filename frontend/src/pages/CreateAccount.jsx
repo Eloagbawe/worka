@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
-import { useRouter } from 'next/router';
-import { ImageCarousel } from '@/components/ImageCarousel';
+import { useNavigate } from "react-router-dom";
+
+import { ImageCarousel } from '../components/ImageCarousel';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 
-const index = () => {
+export const CreateAccount = () => {
   const [selected, setSelected] = useState('user');
-  const router = useRouter();
+  const navigate = useNavigate();
 
 
   const handleChange = (e) => {
@@ -17,9 +18,9 @@ const index = () => {
 
   const handleSubmit = () => {
     if (selected === 'user')
-      router.push('/create_account/user');
+      navigate('/create_account/user');
     if (selected === 'artisan')
-      router.push('/create_account/artisan');
+      navigate('/create_account/artisan');
   }
 
   return (
@@ -50,7 +51,7 @@ const index = () => {
 
         <div className='flex flex-wrap'>
           <p className='mr-3 text-gray-400 mt-2'>Already have an account?</p>
-          <button className='font-bold mt-2' onClick={() => router.push('/login')}>Log in</button>
+          <button className='font-bold mt-2' onClick={() => navigate('/login')}>Log in</button>
         </div>
 
       </div>
@@ -62,5 +63,3 @@ const index = () => {
     </div>
   )
 }
-
-export default index

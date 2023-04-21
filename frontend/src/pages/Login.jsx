@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { FaEye, FaEyeSlash} from 'react-icons/fa';
-import { useRouter } from 'next/router';
 import { toast } from "react-toastify";
 import { useSelector, useDispatch } from "react-redux";
-import { ImageCarousel } from '@/components/ImageCarousel';
-import { Spinner } from '@/components/Spinner';
+import { ImageCarousel } from '../components/ImageCarousel';
+import { Spinner } from '../components/Spinner';
 
-import { login, reset } from '@/store/auth/authSlice';
+import { login, reset } from '../features/auth/authSlice';
+import { useNavigate } from "react-router-dom"
 
 
 
-const Login = () => {
+
+export const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const router = useRouter();
+  const navigate = useNavigate()
   const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({
@@ -24,7 +25,7 @@ const Login = () => {
   const {email, password} = formData
 
 
-  useEffect(() => {
+  useEffect(() => {  
     if (isError) {
       toast.error(message)
     }
@@ -33,10 +34,15 @@ const Login = () => {
       toast.success('login sucessful!')
     }
     if (user) {
-      toast.success('login sucessful!')
-      router.push('/dashboard');
+      navigate('/dashboard');
     }
-  }, [user, isError, isSuccess, message, dispatch])
+
+    return () => {
+      dispatch(reset());
+    }
+  }, [user, isError, isSuccess, message, dispatch, navigate])
+
+
   const onChange = (e) => {
     setFormData((prevState) => ({
       ...prevState,
@@ -87,7 +93,7 @@ const Login = () => {
 
         <div className='flex flex-wrap'>
           <p className='mr-3 text-gray-400 mt-2'>Don't have an account?</p>
-          <button className='font-bold mt-2' onClick={() => router.push('/create_account')}>Sign Up</button>
+          <button className='font-bold mt-2' onClick={() => navigate('/create_account')}>Sign Up</button>
         </div>
 
       </div>
@@ -98,5 +104,3 @@ const Login = () => {
     </div>
   )
 }
-
-export default Login

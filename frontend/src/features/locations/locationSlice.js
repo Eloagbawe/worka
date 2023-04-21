@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-
+// import { toast } from "react-toastify";
 import locationService from './locationService';
 
 const initialState = {
@@ -18,8 +18,7 @@ export const getLocations = createAsyncThunk('locations/all', async(_, thunkAPI)
   } catch (error) {
     const message = (error.response && error.response.data && 
       error.response.data.message) || error.message || error.toString();
-
-    return thunkAPI.rejectWithValue(message);
+      return thunkAPI.rejectWithValue({message, status: error.response.status});
   }
 });
 

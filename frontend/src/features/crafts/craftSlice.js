@@ -19,7 +19,7 @@ export const getCrafts = createAsyncThunk('crafts/all', async(_, thunkAPI) => {
     const message = (error.response && error.response.data && 
       error.response.data.message) || error.message || error.toString();
 
-    return thunkAPI.rejectWithValue(message);
+    return thunkAPI.rejectWithValue({message, status: error.response.status});
   }
 });
 

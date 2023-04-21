@@ -1,12 +1,11 @@
-import React from 'react'
-import Image from 'next/image';
+import React from 'react';
 import Carousel from 'react-material-ui-carousel';
-import workersImg from '../../public/images/workers.png';
-import tailoringImg from '../../public/images/tailoring.png';
-import hairDresserImg from '../../public/images/hair_dresser.png';
-import carpentryImg from '../../public/images/carpentry.png';
-import electricianImg from '../../public/images/electrician.png';
-import hairSalonImg from '../../public/images/hair.png';
+import workersImg from '../images/workers.png';
+import tailoringImg from '../images/tailoring.png';
+import hairDresserImg from '../images/hair_dresser.png';
+import carpentryImg from '../images/carpentry.png';
+import electricianImg from '../images/electrician.png';
+import hairSalonImg from '../images/hair.png';
 
 
 export const ImageCarousel = () => {
@@ -15,7 +14,7 @@ export const ImageCarousel = () => {
   return (
       <Carousel>
         {carouselImages.map((image, key) => (
-          <Image key={key} src={image} className={`rounded-lg h-[22rem] lg:h-[28rem] object-cover object-top`} priority alt="carousel image"/>
+          <img key={key} src={image} className={`rounded-lg w-full h-[22rem] lg:h-[28rem] object-cover object-top`} alt="carousel"/>
         ))}
       </Carousel>
   )

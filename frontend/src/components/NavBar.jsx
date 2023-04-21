@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { toggleDarkTheme } from '@/_helpers/set_theme';
+import { toggleDarkTheme } from '../_helpers/set_theme';
 import { BsSun, BsMoonFill } from 'react-icons/bs';
 import { FaAlignJustify } from 'react-icons/fa';
 import { IconContext } from "react-icons";
-import Image from 'next/image';
-import Link from 'next/link';
-import { useRouter } from 'next/router'
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useSelector, useDispatch } from "react-redux";
 
 
-import lightLogo from '../../public/images/logo-light.png'
-import darkLogo from '../../public/images/logo-dark.png'
+import { logout, reset } from '../features/auth/authSlice';
+import lightLogo from '../images/logo-light.png'
+import darkLogo from '../images/logo-dark.png'
 
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
@@ -17,13 +17,18 @@ import MenuItem from '@mui/material/MenuItem';
 
 
 export const NavBar = () => {
-  const router = useRouter();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [theme, setTheme] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  const path = router.pathname;
+  const path = useLocation().pathname
 
 
+  const { user } = useSelector((state) => state.auth);
+  
+
+  
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -52,6 +57,11 @@ export const NavBar = () => {
 
   const isCreateAccountPage = path.startsWith('/create_account');
 
+  const onLogout = () => {
+    dispatch(logout())
+    dispatch(reset())
+    navigate('/');
+  }
   
   return (
     <div className='flex px-3 sm:px-8 py-4 items-center justify-between'>
@@ -103,34 +113,43 @@ export const NavBar = () => {
           }
         }}
       >
-        {path !== '/' && <Link href="/"><MenuItem>Home</MenuItem></Link>}
+        {path !== '/' && <Link to="/"><MenuItem>Home</MenuItem></Link>}
         <MenuItem>About</MenuItem>
         <MenuItem>Contact us</MenuItem>
-        {path !=='/search' && <Link href="/search"><MenuItem>Search</MenuItem></Link>}
+        {user && user.role === 'user' && path !=='/search' && <Link to="/search"><MenuItem>Search</MenuItem></Link>}
         <MenuItem>Blog</MenuItem>
 
-        <div className='min-[500px]:hidden mb-3'>
-          {!isCreateAccountPage && <Link href="/create_account"><button className="ml-2 px-3 py-2 block rounded bg-[#EA5455] text-white font-bold">Sign Up</button></Link>}
-          {path !== '/login' && <Link href="/login"><button className="ml-2 px-3 py-2 block font-bold text-text-color">Log in</button></Link>}
+        {user ? (
+          <div className='min-[500px]:hidden mb-3'>
+          {path !== '/dashboard' && <Link to="/dashboard"><button className="ml-2 px-3 py-2 block rounded bg-[#EA5455] text-white font-bold">Dashboard</button></Link>}
+          <button onClick={onLogout} className="ml-2 px-3 py-2 block font-bold text-text-color">Log out</button>
+          </div>
+        ) : (
+          <div className='min-[500px]:hidden mb-3'>
+          {!isCreateAccountPage && <Link to="/create_account"><button className="ml-2 px-3 py-2 block rounded bg-[#EA5455] text-white font-bold">Sign Up</button></Link>}
+          {path !== '/login' && <Link to="/login"><button className="ml-2 px-3 py-2 block font-bold text-text-color">Log in</button></Link>}
         </div>
+        )}
+
+        
 
       </Menu>
       </div>
   
       <div>
-      {theme === 'dark' && <Image src={darkLogo}
-      className='w-32 sm:w-44' alt="logo for dark mode" priority/>}
-      {theme === 'light' && <Image src={lightLogo}
-      className='w-32 sm:w-44' alt="logo for light mode" priority/>}
+      {theme === 'dark' && <img src={darkLogo}
+      className='w-32 sm:w-44' alt="logo for dark mode"/>}
+      {theme === 'light' && <img src={lightLogo}
+      className='w-32 sm:w-44' alt="logo for light mode" />}
       </div>
 
       </div>
 
       <div className='hidden lg:block'>
-        {router.asPath !== '/' && <Link href="/" className='mr-6 text-text-color font-bold'>Home</Link>}
-        <Link href="" className='mr-6 text-text-color font-bold'>About</Link>
-        <Link href="" className='mr-6 text-text-color font-bold'>Contact us</Link>
-        {path !== '/search' && <Link href="/search" className='mr-6 text-text-color font-bold'>Search</Link>}
+        {path !== '/' && <Link to="/" className='mr-6 text-text-color font-bold'>Home</Link>}
+        <Link to="" className='mr-6 text-text-color font-bold'>About</Link>
+        <Link to="" className='mr-6 text-text-color font-bold'>Contact us</Link>
+        {user && user.role === 'user' && path !== '/search' && <Link to="/search" className='mr-6 text-text-color font-bold'>Search</Link>}
         <Link href="" className='mr-6 text-text-color font-bold'>Blog</Link>
       </div>
 
@@ -151,12 +170,17 @@ export const NavBar = () => {
         </IconContext.Provider>}
         </div>
 
-        <div className='hidden min-[500px]:block'>
-          {!isCreateAccountPage && <Link href="/create_account"><button className="px-5 py-2 rounded bg-[#EA5455] text-white font-bold">Sign Up</button></Link>}
-          {path !== '/login' && <Link href="/login"><button className="px-5 py-2 font-bold text-text-color">Log in</button></Link>}
+        {user ? (
+          <div className='hidden min-[500px]:block'>
+          {path !== '/dashboard' && <Link to="/dashboard"><button className="px-5 py-2 rounded bg-[#EA5455] text-white font-bold">Dashboard</button></Link>}
+          <button onClick={onLogout} className="px-5 py-2 font-bold text-text-color">Log out</button>
         </div>
-
-        
+        ): (
+          <div className='hidden min-[500px]:block'>
+          {!isCreateAccountPage && <Link to="/create_account"><button className="px-5 py-2 rounded bg-[#EA5455] text-white font-bold">Sign Up</button></Link>}
+          {path !== '/login' && <Link to="/login"><button className="px-5 py-2 font-bold text-text-color">Log in</button></Link>}
+          </div>
+        )}
       </div>
     </div>
   )

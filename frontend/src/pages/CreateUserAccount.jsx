@@ -2,14 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { FaEye, FaEyeSlash, FaUpload} from 'react-icons/fa';
 import { toast } from "react-toastify";
 import { useSelector, useDispatch } from "react-redux";
-import { useRouter } from 'next/router';
-import { register, reset } from '@/store/auth/authSlice';
+import { useNavigate } from "react-router-dom";
 
-import { Spinner } from '@/components/Spinner';
+import { register, reset } from '../features/auth/authSlice';
+
+import { Spinner } from '../components/Spinner';
 
 
-const create_user = () => {
-  const router = useRouter();
+export const CreateUserAccount = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -40,12 +41,14 @@ const create_user = () => {
     }
 
     if (user) {
-      router.push('/dashboard');
+      navigate('/dashboard');
     }
 
-    dispatch(reset());
+    return () => {
+      dispatch(reset());
+    }
 
-  }, [user, isError, isSuccess, message, dispatch])
+  }, [user, isError, isSuccess, message, dispatch, navigate])
 
   const onChange = (e) => {
     setFormData((prevState) => ({
@@ -170,5 +173,3 @@ const create_user = () => {
     </div>
   )
 }
-
-export default create_user
