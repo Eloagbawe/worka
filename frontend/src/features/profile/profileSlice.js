@@ -1,4 +1,4 @@
-import {createSlice, createAsyncThunk} from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import profileService from './profileService'
 
 const initialState = {
@@ -19,7 +19,7 @@ export const getMe = createAsyncThunk('user/me', async (_,thunkAPI) => {
       const message = (error.response && error.response.data && 
           error.response.data.message) || error.message || error.toString()
 
-      return thunkAPI.rejectWithValue(message)
+      return thunkAPI.rejectWithValue({message, status: error.response.status});
     }
 })
 
@@ -29,11 +29,11 @@ export const getUser = createAsyncThunk('user/profile', async (id,thunkAPI) => {
       const token = thunkAPI.getState().auth.user.token
       return await profileService.getUser(id, token)
   } catch (error) {
-      const message = (error.response && error.response.data && 
-          error.response.data.message) || error.message || error.toString()
+    const message = (error.response && error.response.data && 
+        error.response.data.message) || error.message || error.toString()
 
-      return thunkAPI.rejectWithValue(message)
-  }
+      return thunkAPI.rejectWithValue({message, status: error.response.status});
+    }
 })
 
 // Update Profile
@@ -45,8 +45,8 @@ export const updateProfile = createAsyncThunk('user/update', async (data, thunkA
       const message = (error.response && error.response.data && 
           error.response.data.message) || error.message || error.toString()
 
-      return thunkAPI.rejectWithValue(message)
-  }
+      return thunkAPI.rejectWithValue({message, status: error.response.status});
+    }
 })
 
 export const profileSlice = createSlice({
@@ -60,6 +60,9 @@ export const profileSlice = createSlice({
     builder
     .addCase(getMe.pending, (state) => {
         state.isLoading = true
+        state.isError = false
+        state.isSuccess = false
+        state.message = ''
     })
     .addCase(getMe.fulfilled, (state, action) => {
         state.isLoading = false
@@ -74,6 +77,9 @@ export const profileSlice = createSlice({
     })
     .addCase(getUser.pending, (state) => {
         state.isLoading = true
+        state.isError = false
+        state.isSuccess = false
+        state.message = ''
     })
     .addCase(getUser.fulfilled, (state, action) => {
         state.isLoading = false
