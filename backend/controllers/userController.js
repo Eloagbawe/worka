@@ -16,7 +16,7 @@ const mongoose = require('mongoose')
 //Generate JWT
 const generateToken = (id, role) => {
   return jwt.sign({id, role}, process.env.JWT_SECRET, {
-    expiresIn: '1d'
+    expiresIn: '2d'
   })
 }
 
@@ -198,13 +198,13 @@ const getMe = asyncHandler(async (req, res) => {
 
   if (role === 'user') {
     await req.user.populate({path: 'reviews bookings', select: 'date text rating createdAt', 
-          populate: {path: 'artisanId', select: 'first_name last_name profile_picture',
+          populate: {path: 'artisanId', select: 'first_name last_name profile_picture phone gender',
           populate: {path: 'craft location', select: 'name city state'}}})
   }
 
   if (role === 'artisan') {
     await req.user.populate({path: 'reviews bookings', select: 'date text rating createdAt',
-        populate: {path: 'userId', select: 'first_name last_name profile_picture'}})
+        populate: {path: 'userId', select: 'first_name last_name profile_picture phone gender'}})
     await req.user.populate({path: 'craft location', select: 'name city state'})
   }
   
@@ -248,16 +248,13 @@ const updateProfile = asyncHandler(async (req, res) => {
         profile_picture: imageUrls.profile_picture,
         bio: bio,
         gender: gender,
-        work_images: {
-          work_image_1: imageUrls.work_image_1,
-          work_image_2: imageUrls.work_image_2
-        }
+        'work_pictures.work_image_1': imageUrls.work_image_1,
+        'work_pictures.work_image_2': imageUrls.work_image_2,
       }
-      const updatedArtisan = await Artisan.findByIdAndUpdate(req.user.id, allowedFields, {new: true}).select('-password')
+      const updatedArtisan = await Artisan.findByIdAndUpdate(req.user.id, {$set: allowedFields}, {new: true}).select('-password')
       res.status(200).json(updatedArtisan);
     }
   } catch (err) {
-    console.log(err);
     res.status(400).json({
       message: 'something went wrong while processing your request'
     })
@@ -272,7 +269,9 @@ const getProfile = asyncHandler(async (req, res) => {
     const artisan = await Artisan.findById(id)
     .select('-password -updatedAt -__v')
     .populate({path: 'reviews', select: 'text rating', populate: {path: 'userId',
-    select: 'first_name last_name profile_picture'}});
+    select: 'first_name last_name profile_picture'}})
+    .populate({path: 'craft location', select: 'name city state'})
+
 
     if (!artisan) {
       res.status(404);
@@ -284,13 +283,16 @@ const getProfile = asyncHandler(async (req, res) => {
     .populate({path: 'artisanId', select: 'first_name last_name profile_picture',
     populate: {path: 'craft location', select: 'name city state'}})
 
+
     res.status(200).json({ ...artisan.toObject(), review: review ? review : null})
 
   }
   else if (role === 'artisan') {
     const bookingExists = await Booking.findOne({ artisanId: req.user._id, userId: id});
+    const reviewExists = await Review.findOne({ artisanId: req.user._id, userId: id});
 
-    if (!bookingExists) {
+
+    if (!bookingExists && !reviewExists) {
       res.status(401);
       throw new Error('Not authorized');
     }
@@ -311,8 +313,9 @@ const getProfile = asyncHandler(async (req, res) => {
 })
 
 const searchArtisan = asyncHandler(async (req, res) => {
-  const { page=0 } = req.query;
-  const { craftId, locationId } = req.body;
+  const { page=1, craftId, locationId } = req.query;
+  // const { craftId, locationId } = req.body;
+  const limit = 8;
 
   const { role } = req.user;
 
@@ -333,20 +336,34 @@ const searchArtisan = asyncHandler(async (req, res) => {
 
   const artisans = await Artisan.aggregate([
     { $match: query },
-    { $skip: parseInt(page, 10) * 10 },
-    { $limit: 10 },
     { 
       $sort: { "rating": -1 } 
     },
+    { $skip: (parseInt(page, 10) - 1) * limit },
+    { $limit: limit },
     {
       $project: {
         password: 0, __v: 0, bookings: 0, reviews: 0
       },
     }
   ])
+
+
   const result = await Artisan.populate(artisans, {path: 'craft location', select: 'name city state country'});
 
-  res.status(200).send(result);
+  const count = await Artisan.find(query).count();
+
+  const totalPages = Math.ceil(count / limit);
+
+  const pageInfo = {
+    currentPage: parseInt(page),
+    totalPages,
+    hasPrevious: (parseInt(page) - 1) >= 1,
+    hasNext: (parseInt(page) + 1) <= totalPages
+  }
+
+  //res.status(200).send(result);
+  res.status(200).json({ result, pageInfo});
 
 })
 
