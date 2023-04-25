@@ -3,6 +3,7 @@ import bookingService from './bookingService';
 
 const initialState = {
   bookings: [],
+  bookedDates: [],
   bookingError: false,
   bookingSuccess: false,
   bookingLoading: false,
@@ -11,22 +12,23 @@ const initialState = {
 
 // Add Booking
 
-export const add_booking = createAsyncThunk('bookings/add', async(data, thunkAPI) => {
+export const addBooking = createAsyncThunk('bookings/add', async(params, thunkAPI) => {
   try {
     const token = thunkAPI.getState().auth.user.token;
-    return await bookingService.add_booking(data, token);
+    const {id, data} = params
+    return await bookingService.create_booking(id, data, token);
   } catch (error) {
     const message = (error.response && error.response.data && 
       error.response.data.message) || error.message || error.toString()
 
-  return thunkAPI.rejectWithValue(message);
+    return thunkAPI.rejectWithValue({message, status: error.response.status});
   }
 });
 
 
 // Get Bookings
 
-export const get_bookings = createAsyncThunk('bookings/all', async(_, thunkAPI) => {
+export const getBookings = createAsyncThunk('bookings/all', async(_, thunkAPI) => {
   try {
     const token = thunkAPI.getState().auth.user.token;
     return await bookingService.get_bookings(token);
@@ -34,13 +36,25 @@ export const get_bookings = createAsyncThunk('bookings/all', async(_, thunkAPI) 
     const message = (error.response && error.response.data && 
       error.response.data.message) || error.message || error.toString()
 
-  return thunkAPI.rejectWithValue(message);
-  }
+      return thunkAPI.rejectWithValue({message, status: error.response.status});
+    }
 })
 
+// Get booked dates
+export const getBookedDates = createAsyncThunk('bookings/bookedDates', async(id, thunkAPI) => {
+  try {
+    const token = thunkAPI.getState().auth.user.token;
+    return await bookingService.get_booked_dates(id, token);
+  } catch (error) {
+    const message = (error.response && error.response.data && 
+      error.response.data.message) || error.message || error.toString()
+
+      return thunkAPI.rejectWithValue({message, status: error.response.status});
+    }
+})
 // Delete Booking
 
-export const delete_booking = createAsyncThunk('bookings/delete', async(id, thunkAPI) => {
+export const deleteBooking = createAsyncThunk('bookings/delete', async(id, thunkAPI) => {
   try{
     const token = thunkAPI.getState().auth.user.token;
     return await bookingService.delete_booking(id, token);
@@ -48,11 +62,11 @@ export const delete_booking = createAsyncThunk('bookings/delete', async(id, thun
     const message = (error.response && error.response.data && 
       error.response.data.message) || error.message || error.toString();
 
-  return thunkAPI.rejectWithValue(message);
-  }
+      return thunkAPI.rejectWithValue({message, status: error.response.status});
+    }
 })
 
-const bookingSlice = createSlice({
+export const bookingSlice = createSlice({
   name: 'booking',
   initialState,
   reducers: {
@@ -60,39 +74,64 @@ const bookingSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-    .addCase(add_booking.pending, (state) => {
+    .addCase(addBooking.pending, (state) => {
       state.bookingLoading = true
+      // state.bookingSuccess = false
+      // state.bookingError = false
+      // state.bookingMessage = ''
     })
-    .addCase(add_booking.fulfilled, (state) => {
+    .addCase(addBooking.fulfilled, (state) => {
       state.bookingLoading = false
       state.bookingSuccess = true
     })
-    .addCase(add_booking.rejected, (state, action) => {
+    .addCase(addBooking.rejected, (state, action) => {
       state.bookingLoading = false
       state.bookingError = true
       state.bookingMessage = action.payload
     })
-    .addCase(get_bookings.loading, (state) => {
+    .addCase(getBookings.pending, (state) => {
       state.bookingLoading = true
+      // state.bookingSuccess = false
+      // state.bookingError = false
+      // state.bookingMessage = ''
     })
-    .addCase(get_bookings.fulfilled, (state, action) => {
+    .addCase(getBookings.fulfilled, (state, action) => {
       state.bookings = action.payload
       state.bookingLoading = false
       state.bookingSuccess = true
     })
-    .addCase(get_bookings.rejected, (state, action) => {
+    .addCase(getBookings.rejected, (state, action) => {
       state.bookingLoading = false
       state.bookingError = true
       state.bookingMessage = action.payload
     })
-    .addCase(delete_booking.pending, (state) => {
+    .addCase(getBookedDates.pending, (state) => {
       state.bookingLoading = true
+      state.bookingSuccess = false
+      state.bookingError = false
+      state.bookingMessage = ''
     })
-    .addCase(delete_booking.fulfilled, (state) => {
+    .addCase(getBookedDates.fulfilled, (state, action) => {
+      state.bookingLoading = false
+      state.bookingSuccess = true
+      state.bookedDates = action.payload
+    })
+    .addCase(getBookedDates.rejected, (state, action) => {
+      state.bookingLoading = false
+      state.bookingError = true
+      state.bookingMessage = action.payload
+    })
+    .addCase(deleteBooking.pending, (state) => {
+      state.bookingLoading = true
+      // state.bookingSuccess = false
+      // state.bookingError = false
+      // state.bookingMessage = ''
+    })
+    .addCase(deleteBooking.fulfilled, (state) => {
       state.bookingLoading = false
       state.bookingSuccess = true
     })
-    .addCase(delete_booking.rejected, (state, action) => {
+    .addCase(deleteBooking.rejected, (state, action) => {
       state.bookingLoading = false
       state.bookingError = true
       state.bookingMessage = action.payload
