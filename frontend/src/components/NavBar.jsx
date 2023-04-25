@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { toggleDarkTheme } from '../_helpers/set_theme';
 import { BsSun, BsMoonFill } from 'react-icons/bs';
 import { FaAlignJustify } from 'react-icons/fa';
@@ -19,13 +19,19 @@ import MenuItem from '@mui/material/MenuItem';
 export const NavBar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [theme, setTheme] = useState('light');
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const path = useLocation().pathname
 
 
   const { user } = useSelector((state) => state.auth);
+
+  let mode;
+    if (typeof window !== "undefined") {
+      mode = localStorage.getItem('theme');
+    };
+  const [theme, setTheme] = useState(mode);
+
   
 
   
@@ -37,12 +43,6 @@ export const NavBar = () => {
     setAnchorEl(null);
   };
 
-  useEffect(() => {
-    const mode = localStorage.getItem('theme');
-    if (mode) {
-      setTheme(mode)
-    }
-  }, [])
 
   const setDarkTheme = () => {
     toggleDarkTheme();
