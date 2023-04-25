@@ -33,6 +33,9 @@ export const locationSlice = createSlice({
     builder
     .addCase(getLocations.pending, (state) => {
       state.locationsLoading = true;
+      state.locationsSuccess = false;
+      state.locationsError = false;
+      state.locationsMessage = ''
     })
     .addCase(getLocations.fulfilled, (state, action) => {
       state.locationsLoading = false;
