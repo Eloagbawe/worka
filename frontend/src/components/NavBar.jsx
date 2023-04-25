@@ -24,9 +24,7 @@ export const NavBar = () => {
   const open = Boolean(anchorEl);
   const path = useLocation().pathname
 
-
   const { user } = useSelector((state) => state.auth);
-  const mode = localStorage.getItem('theme');  
 
 
   const handleClick = (event) => {
@@ -38,6 +36,7 @@ export const NavBar = () => {
   };
 
   useEffect(() => {
+    const mode = localStorage.getItem('theme');  
     if ((mode === 'dark') || (!mode && window.matchMedia("(prefers-color-scheme: dark)").matches)){
       addDarkTheme();
       setTheme('dark');
@@ -45,9 +44,10 @@ export const NavBar = () => {
       addLightTheme();
       setTheme('light');
     }
-  }, [mode])
+  }, [])
 
   const setDarkTheme = () => {
+    const mode = localStorage.getItem('theme');  
     if (mode) {
       toggleDarkTheme();
     } else {
@@ -58,6 +58,7 @@ export const NavBar = () => {
   }
 
   const setLightTheme = () => {
+    const mode = localStorage.getItem('theme');
     if (mode) {
       toggleDarkTheme();
     } else {
