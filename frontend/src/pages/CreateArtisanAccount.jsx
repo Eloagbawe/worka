@@ -7,6 +7,9 @@ import { useNavigate } from "react-router-dom";
 import { register, reset } from '../features/auth/authSlice';
 import { resetCrafts, getCrafts } from '../features/crafts/craftSlice';
 import { resetLocations, getLocations } from '../features/locations/locationSlice';
+import { resetProfile } from '../features/profile/profileSlice';
+import { resetBooking } from '../features/booking/bookingSlice';
+import { resetReview } from '../features/review/reviewSlice';
 
 import { Spinner } from '../components/Spinner';
 
@@ -66,7 +69,11 @@ export const CreateArtisanAccount = () => {
 
   useEffect(() => {
     if (isError) {
-      toast.error(message);
+      if (message.status === 500) {
+        toast.error('A Network Error has occurred');
+        return;
+      }
+      toast.error(message.message)
     }
 
     if (isSuccess) {
@@ -77,22 +84,20 @@ export const CreateArtisanAccount = () => {
       navigate('/dashboard');
 
     }
-
-    return () => {
-      if (isSuccess) {
-        dispatch(resetCrafts());
-        dispatch(resetLocations());
-      }
-      dispatch(reset());
-    }
-
   }, [dispatch, user, isError, isSuccess, message, navigate])
 
-  // useEffect(() => {
-  //   return () => {
-  //     dispatch(reset())
-  //   }
-  // }, [user])
+  useEffect(() => {
+      return () => {
+        if (isSuccess) {
+          dispatch(resetCrafts());
+          dispatch(resetLocations());
+        }
+        dispatch(reset());
+        dispatch(resetProfile());
+        dispatch(resetReview());
+        dispatch(resetBooking());
+      }
+  }, [dispatch, user, isSuccess])
   
   const onChange = (e) => {
     setFormData((prevState) => ({
