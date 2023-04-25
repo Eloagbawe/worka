@@ -427,9 +427,9 @@ export const Dashboard = () => {
 
         <div className='w-full text-text-color px-3 py-5'>
 
-            <div className='min-[575px]:flex items-center'>
+            <div className='min-[575px]:flex items-center max-[575px]:text-center'>
 
-                <div className='sm:px-3'>
+                <div className='px-3 max-[992px]:pr-5 max-[575px]:flex max-[575px]:justify-center'>
                     <img className='min-[992px]:max-[1200px]:w-[10rem] min-[992px]:max-[1200px]:h-[9rem] w-[14rem] h-[14rem] rounded-[50%]'
                     alt="" src={profile ? profile?.profile_picture : profilePlaceholder}/>
                 </div>
@@ -501,7 +501,7 @@ export const Dashboard = () => {
                         <>
                         <p className='shrink-0 mr-3 w-[11rem]'>{capitalize(booking?.artisanId?.first_name)} {capitalize(booking?.artisanId?.last_name)}</p>
                         <p className='shrink-0 mr-5'>{format(new Date(booking.date), 'do MMM yyyy h aaa')} </p>
-                        <Link to={`/profile/${booking?.artisanId?._id}`}><button className='px-2 py-1 bg-[#2A528A] text-sm text-white rounded shrink-0'>View Profile</button></Link>
+                        <Link to={`/profile/${booking?.artisanId?._id}`} className='shrink-0'><button className='px-2 py-1 bg-[#2A528A] text-sm text-white rounded shrink-0'>View Profile</button></Link>
                         <button className='px-3 py-1 text-[#EA5354] rounded shrink-0 text-4xl' onClick={() => openDeleteBooking(booking)}><MdDeleteForever/></button>
                         </>
                       )}
