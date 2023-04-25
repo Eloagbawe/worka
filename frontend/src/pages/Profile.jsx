@@ -158,7 +158,7 @@ export const Profile = () => {
         toast.error('Please select a valid date and time');
         return;
       }
-      
+
       startDate.setMinutes(0);
       startDate.setSeconds(0);
       startDate.setMilliseconds(0);
@@ -298,9 +298,9 @@ export const Profile = () => {
 
       <div className='w-full text-text-color px-3 py-5'>
 
-          <div className='min-[575px]:flex items-center'>
+          <div className='min-[575px]:flex items-center max-[575px]:text-center'>
 
-              <div className='sm:px-3'>
+              <div className='px-3 max-[992px]:pr-5 max-[575px]:flex max-[575px]:justify-center'>
                   <img className='min-[992px]:max-[1200px]:w-[10rem] min-[992px]:max-[1200px]:h-[9rem] w-[14rem] h-[14rem] rounded-[50%]'
                   alt="" src={userProfile ? userProfile?.profile_picture : profilePlaceholder}/>
               </div>
@@ -309,7 +309,7 @@ export const Profile = () => {
                   <p className='text-[1.2rem] min-[360px]:text-[1.5rem] md:text-[2rem] font-bold my-2'>{userProfile ? capitalize(userProfile?.first_name) : ''} {userProfile ? capitalize(userProfile?.last_name) : ''}</p>
                   <p className='my-2'>{userProfile ? userProfile?.phone : ''}</p>
                   <p className='my-2'>{userProfile ? userProfile?.gender : ''}</p>
-                  <div className='flex flex-wrap items-center my-2'>
+                  <div className='flex flex-wrap items-center my-2 max-[575px]:justify-center'>
                   <p className='text-[#7393A7] font-bold text-xl mr-3'>{userProfile ? userProfile.rating : ''} stars</p>
                   {userProfile && !userProfile?.review && <button 
                   className='py-1 px-2 h-[1.5rem] bg-btn-bg text-xs text-[#fdfdfd] rounded-xl' 
@@ -324,7 +324,7 @@ export const Profile = () => {
 
           {userProfile?.role === 'artisan' ? (
             <>
-              <div className='min-[575px]:p-10'>
+              <div className='min-[575px]:p-10 max-[575px]:pt-5'>
 
               <div className=''>
                   <p className='my-5 text-[1.1rem]'>{userProfile?.bio ? userProfile.bio : ''}</p>
