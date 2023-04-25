@@ -1,14 +1,14 @@
 import React from 'react';
 import Carousel from 'react-material-ui-carousel';
+import workersImg from '../images/workers.png';
+import tailoringImg from '../images/tailoring.png';
+import hairDresserImg from '../images/hair_dresser.png';
+import carpentryImg from '../images/carpentry.png';
+import electricianImg from '../images/electrician.png';
+import hairSalonImg from '../images/hair.png';
 
 export const ImageCarousel = () => {
-  const carouselImages = [ 
-    'https://res.cloudinary.com/eloagbawe/image/upload/v1682452890/worka_carousel_images/vligosirbjtoafkstpuh.png',
-    'https://res.cloudinary.com/eloagbawe/image/upload/v1682452890/worka_carousel_images/qbt8mnq4mk4ckugofprm.png',
-    'https://res.cloudinary.com/eloagbawe/image/upload/v1682452891/worka_carousel_images/tekgw5mfjxeo1jxlukth.png',
-    'https://res.cloudinary.com/eloagbawe/image/upload/v1682452890/worka_carousel_images/wuzzacuv5whjzqxozjy7.png',
-    'https://res.cloudinary.com/eloagbawe/image/upload/v1682452891/worka_carousel_images/wlawde0tiv2frbmo0x4b.png',
-    'https://res.cloudinary.com/eloagbawe/image/upload/v1682452890/worka_carousel_images/imufopqo9d8uahhuzxfz.png', ];
+  const carouselImages = [ hairSalonImg, electricianImg, tailoringImg, carpentryImg, hairDresserImg, workersImg, ];
 
   return (
       <Carousel>
