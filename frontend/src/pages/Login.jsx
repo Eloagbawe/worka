@@ -6,6 +6,11 @@ import { ImageCarousel } from '../components/ImageCarousel';
 import { Spinner } from '../components/Spinner';
 
 import { login, reset } from '../features/auth/authSlice';
+import { resetProfile } from '../features/profile/profileSlice';
+import { resetCrafts } from '../features/crafts/craftSlice';
+import { resetLocations } from '../features/locations/locationSlice';
+import { resetBooking } from '../features/booking/bookingSlice';
+import { resetReview } from '../features/review/reviewSlice';
 import { useNavigate } from "react-router-dom"
 
 
@@ -27,7 +32,11 @@ export const Login = () => {
 
   useEffect(() => {  
     if (isError) {
-      toast.error(message)
+      if (message.status === 500) {
+        toast.error('A Network Error has occurred');
+        return;
+      }
+      toast.error(message.message) 
     }
 
     if (isSuccess) {
@@ -36,12 +45,19 @@ export const Login = () => {
     if (user) {
       navigate('/dashboard');
     }
-
-    return () => {
-      dispatch(reset());
-    }
   }, [user, isError, isSuccess, message, dispatch, navigate])
 
+  useEffect(() => {
+  
+    return () => {
+      dispatch(reset());
+      dispatch(resetProfile());
+      dispatch(resetBooking());
+      dispatch(resetReview());
+      dispatch(resetLocations());
+      dispatch(resetCrafts());
+    }
+  }, [dispatch])
 
   const onChange = (e) => {
     setFormData((prevState) => ({
