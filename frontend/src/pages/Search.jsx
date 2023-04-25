@@ -1,33 +1,48 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { resetCrafts, getCrafts } from '../features/crafts/craftSlice';
 import { resetLocations, getLocations } from '../features/locations/locationSlice';
 import { reset } from '../features/auth/authSlice';
+import { resetSearch, searchArtisans } from '../features/search/searchSlice';
+
+import { resetBooking } from '../features/booking/bookingSlice';
+import { resetReview } from '../features/review/reviewSlice';
+import { resetProfile } from '../features/profile/profileSlice';
+
+import { Spinner } from '../components/Spinner';
+
 
 export const Search = () => {
   const [searchMode, setSearchMode] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [page, setPage] = useState(1);
+  const [searchData, setSearchData] = useState({
+    craftId: 'none',
+    locationId: 'none'
+  })
 
 
-  const { crafts, craftsError, craftsLoading, craftsMessage } = useSelector((state) => state.craft);
-  const { locations, locationsError, locationsLoading, locationsMessage } = useSelector((state) => state.location);
+  const {craftId, locationId } = searchData;
+  const { crafts, craftsError, craftsMessage } = useSelector((state) => state.craft);
+  const { locations, locationsError, locationsMessage } = useSelector((state) => state.location);
   const { user } = useSelector((state) => state.auth)
+  const { results, pageInfo, searchLoading, searchError, searchSuccess, searchMessage} = useSelector((state) => state.search);
 
   useEffect(() => {
 
     if (craftsError) {
-      craftsMessage.status === 500 ? 
+      craftsMessage?.status === 500 ? 
       toast.error('A Network Error has occurred') :
-      toast.error(craftsMessage.message)
+      toast.error(craftsMessage?.message)
       return;
     }
     else if (locationsError) {
-      locationsMessage.status === 500 ? 
+      locationsMessage?.status === 500 ? 
       toast.error('A Network Error has occurred') :
-      toast.error(locationsMessage.message)
+      toast.error(locationsMessage?.message)
       return;
     } else {
       dispatch(getCrafts());
@@ -37,31 +52,120 @@ export const Search = () => {
   }, [dispatch, craftsError, locationsError, locationsMessage, craftsMessage])
 
   useEffect(() => {
-
-    // if (!user) {
-    //   router.push('/login');
-    // } 
+  
     return () => {
       dispatch(reset());
-      dispatch(resetCrafts());
+      dispatch(resetProfile());
+      dispatch(resetBooking());
+      dispatch(resetReview());
       dispatch(resetLocations());
+      dispatch(resetCrafts());
+      dispatch(resetSearch());
+    }
+  }, [dispatch])
+
+  useEffect(() => {
+
+    if (searchError) {
+      if (searchMessage?.status === 500) {
+        toast.error('A Network Error has occurred');
+        return;
+      }
+      toast.error(searchMessage?.message);
+    }
+    if (!user || user.role !== 'user') {
+      navigate('/');
     }
 
-  }, [dispatch])
+    if (searchSuccess) {
+      setSearchMode(true)
+    }
+    // return () => {
+    //   dispatch(reset());
+    //   dispatch(resetCrafts());
+    //   dispatch(resetLocations());
+    // }
+
+  }, [navigate, user, searchError, searchMessage, searchSuccess])
+
+  
+
+  const onChange = (e) => {
+    setSearchData((prevState) => ({
+      ...prevState,
+      [e.target.name]: e.target.value
+    }))
+  }
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    if (!user) {
-      navigate('/login');
-      return;
+    setSearchMode(false);
+    setPage(1);
+    const data = {
+      page: 1
     }
-    setSearchMode(true);
-    
+    if (craftId !== 'none') {
+      data['craftId'] = craftId;
+    }
+
+    if (locationId !== 'none') {
+      data['locationId'] = locationId;
+    }
+    dispatch(searchArtisans(data))
+  }
+
+  const handlePrevious = () => {
+    const data = {
+      page: page - 1
+    }
+
+
+    if (craftId !== 'none') {
+      data['craftId'] = craftId;
+    }
+
+    if (locationId !== 'none') {
+      data['locationId'] = locationId;
+    }
+    dispatch(searchArtisans(data)).then(() => {
+      if (searchSuccess) {
+        setPage(page - 1)
+      }
+    })
+
+  }
+
+  const handleNext = () => {
+    const data = {
+      page: page + 1
+    }
+
+
+    if (craftId !== 'none') {
+      data['craftId'] = craftId;
+    }
+
+    if (locationId !== 'none') {
+      data['locationId'] = locationId;
+    }
+    dispatch(searchArtisans(data)).then(() => {
+      if (searchSuccess) {
+        setPage(page + 1)
+      }
+    })
+  }
+
+  const capitalize = (word) => {
+    return word.charAt(0).toUpperCase() + word.slice(1)
+  }
+  
+  if (searchLoading) {
+    return (<Spinner/>)
   }
   return (
     <div className='text-text-color mt-10'>
 
-      {true &&
+      {
         <div className='flex justify-center'>
         <div className='sm:w-3/5 xl:w-2/5 w-10/12 max-[320px]:w-11/12'>
         <h2 className='text-center font-bold text-[2rem] mb-5'>Search Artisan</h2>
@@ -72,9 +176,9 @@ export const Search = () => {
 
               <div className='flex items-center justify-center w-full'>
                 <label htmlFor="craft" className='mr-8 sm:mr-10'>Craft:</label>
-                <select id="craft" defaultValue="none" name="craftList" form="searchArtisanForm" 
-                className='border rounded focus:outline-0 bg-transparent p-2 my-5 w-full'>
-                  <option value="none" disabled className='text-gray-400'>Choose a craft</option>
+                <select id="craft" value={craftId} name="craftId" form="searchArtisanForm" 
+                className='border rounded focus:outline-0 bg-transparent p-2 my-5 w-full' onChange={onChange}>
+                  <option value="none"></option>
                   {crafts?.map((craft, key) => (
                     <option key={key} value={craft?._id}>{craft?.name}</option>
                   ))}
@@ -83,9 +187,9 @@ export const Search = () => {
 
               <div className='flex items-center justify-center w-full'>
                 <label htmlFor="location" className='mr-2 sm:mr-4'>Location:</label>
-                <select id="location" defaultValue="none" name="locationList" form="searchArtisanForm" 
-                className='border rounded focus:outline-0 bg-transparent p-2 my-5 w-full'>
-                  <option value="none" disabled>Choose a location</option>
+                <select id="location" value={locationId} name="locationId" form="searchArtisanForm" 
+                className='border rounded focus:outline-0 bg-transparent p-2 my-5 w-full' onChange={onChange}>
+                  <option value="none"></option>
                   {locations?.map((location, key) => (
                     <option key={key} value={location?._id}>{location?.name}</option>
                   ))}
@@ -112,55 +216,26 @@ export const Search = () => {
 
           <div className='grid grid-cols-1 min-[475px]:grid-cols-2 min-[992px]:grid-cols-4 gap-6 justify-center mt-10'>
 
-            <div className='border rounded-lg p-5'>
+            {results && results?.length > 0 ? (
+              results?.map((result, key) => (
+              <div className='border rounded-lg p-5' key={key}>
 
-              <p className='my-1'>Name: Joy Momoh</p>
-              <p className='my-1'>Hairdressing</p>
-              <p className='my-1'>Wuye</p>
-              <p className='my-1 font-bold'>5 stars</p>
+                <p className='my-1'>Name: {result?.first_name ? `${capitalize(result?.first_name)} `: ''} {result?.last_name ? `${capitalize(result?.last_name)} `: ''}</p>
+                <p className='my-1'>{result?.craft?.name}</p>
+                <p className='my-1'>{result?.location?.name}</p>
+                <p className='my-1 font-bold'>{result?.rating} stars</p>
 
-              <button className='rounded px-3 py-2 bg-[#2A528A] text-white my-3'>View Profile</button>
+                <Link to={`/profile/${result?._id}`}><button className='rounded px-3 py-2 bg-[#2A528A] text-white my-3'>View Profile</button></Link>
 
-            </div>
-
-            <div className='border rounded-lg p-5'>
-
-              <p className='my-1'>Name: Joy Momoh</p>
-              <p className='my-1'>Hairdressing</p>
-              <p className='my-1'>Wuye</p>
-              <p className='my-1 font-bold'>5 stars</p>
-
-              <button className='rounded px-3 py-2 bg-[#2A528A] text-white my-3'>View Profile</button>
-
-            </div>
-
-            <div className='border rounded-lg p-5'>
-
-              <p className='my-1'>Name: Joy Momoh</p>
-              <p className='my-1'>Hairdressing</p>
-              <p className='my-1'>Wuye</p>
-              <p className='my-1 font-bold'>5 stars</p>
-
-              <button className='rounded px-3 py-2 bg-[#2A528A] text-white my-3'>View Profile</button>
-
-            </div>
-
-            <div className='border rounded-lg p-5'>
-
-              <p className='my-1'>Name: Joy Momoh</p>
-              <p className='my-1'>Hairdressing</p>
-              <p className='my-1'>Wuye</p>
-              <p className='my-1 font-bold'>5 stars</p>
-
-              <button className='rounded px-3 py-2 bg-[#2A528A] text-white my-3'>View Profile</button>
-
-            </div>
-
+              </div>
+              ))
+            ):('No results')}
+            
           </div>
 
           <div className='flex flex-wrap mt-10'>
-            <button className='rounded-lg px-3 py-2 bg-btn-bg text-white my-3 mr-10 w-2/5 sm:w-32'>Previous</button>
-            <button className='rounded-lg px-3 py-2 bg-btn-bg text-white my-3 w-2/5 sm:w-32'>Next</button>
+            {pageInfo && pageInfo?.hasPrevious && <button onClick={() => handlePrevious()}className='rounded-lg px-3 py-2 bg-btn-bg text-white my-3 mr-10 w-2/5 sm:w-32'>Previous</button>}
+            {pageInfo && pageInfo?.hasNext && <button onClick={() => handleNext()} className='rounded-lg px-3 py-2 bg-btn-bg text-white my-3 w-2/5 sm:w-32'>Next</button>}
           </div>
 
         </div>
