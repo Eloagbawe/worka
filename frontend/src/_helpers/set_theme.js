@@ -1,6 +1,11 @@
 export const addDarkTheme = () => {
   document.documentElement.classList.add('dark');
-  localStorage.setItem("theme", "dark")
+  localStorage.setItem("theme", "dark");
+}
+
+export const addLightTheme = () => {
+  document.documentElement.classList.remove('dark');
+  localStorage.setItem("theme", "light");
 }
 
 export const toggleDarkTheme = () => {
