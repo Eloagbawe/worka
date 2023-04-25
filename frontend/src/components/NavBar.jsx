@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { toggleDarkTheme, addDarkTheme } from '../_helpers/set_theme';
+import { toggleDarkTheme, addDarkTheme, addLightTheme } from '../_helpers/set_theme';
 import { BsSun, BsMoonFill } from 'react-icons/bs';
 import { FaAlignJustify } from 'react-icons/fa';
 import { IconContext } from "react-icons";
@@ -26,6 +26,8 @@ export const NavBar = () => {
 
 
   const { user } = useSelector((state) => state.auth);
+  const mode = localStorage.getItem('theme');  
+
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -36,23 +38,31 @@ export const NavBar = () => {
   };
 
   useEffect(() => {
-    const mode = localStorage.getItem('theme');  
     if ((mode === 'dark') || (!mode && window.matchMedia("(prefers-color-scheme: dark)").matches)){
       addDarkTheme();
       setTheme('dark');
     } else {
+      addLightTheme();
       setTheme('light');
     }
-  }, [])
+  }, [mode])
 
   const setDarkTheme = () => {
-    toggleDarkTheme();
+    if (mode) {
+      toggleDarkTheme();
+    } else {
+      addDarkTheme();
+    }
     setTheme('dark');
 
   }
 
   const setLightTheme = () => {
-    toggleDarkTheme();
+    if (mode) {
+      toggleDarkTheme();
+    } else {
+      addLightTheme()
+    }
     setTheme('light');
   }
 
