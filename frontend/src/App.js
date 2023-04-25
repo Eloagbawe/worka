@@ -8,6 +8,8 @@ import { CreateUserAccount } from './pages/CreateUserAccount';
 import { CreateArtisanAccount } from './pages/CreateArtisanAccount';
 import { Search } from './pages/Search';
 import { Dashboard } from './pages/Dashboard';
+import { Profile } from './pages/Profile';
+import { NotFound } from './pages/NotFound';
 
 import { addDarkTheme } from './_helpers/set_theme';
 import { useEffect } from 'react';
@@ -40,6 +42,8 @@ function App() {
           <Route path='/create_account/artisan' element={<CreateArtisanAccount/>} />
           <Route path='/search' element={<Search/>} />
           <Route path='/dashboard' element={<Dashboard/>} />
+          <Route path='/profile/:id' element={<Profile/>} />
+          <Route path='*' element={<NotFound/>} />
       </Routes>
 
       <Footer/>
