@@ -3,7 +3,7 @@ import logo from '../images/logo-dup.png';
 
 export const Footer = () => {
   return (
-    <div className="footer mt-20 mb-10 sticky top-[100vh] bottom-0 w-full text-gray-500">
+    <div className="footer mt-20 mb-10 top-[100vh] bottom-0 w-full text-gray-500">
        <hr className='bg-gray-500 border-0  h-[0.05px]'/>
        <div className='min-[475px]:flex px-4 sm:px-12 my-5'>
 
