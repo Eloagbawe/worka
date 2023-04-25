@@ -73,38 +73,21 @@ const createBooking = asyncHandler(async (req, res) => {
 
 });
 
+
 const getBookedDates = asyncHandler(async (req, res) => {
-  const { role } = req.user;
+  // const { role } = req.user;
+  const { id } = req.params;
 
-  if (role !== 'artisan') {
-    res.status(401);
-    throw new Error('Not authorized');
-  }
+  // if (role !== 'artisan') {
+  //   res.status(401);
+  //   throw new Error('Not authorized');
+  // }
 
-  const artisan = await Artisan.findById(req.user._id).select('-password -__v -createdAt -updatedAt')
-  .populate('bookings');
-
-  if (!artisan) {
-    res.status(404);
-    throw new Error('Artisan not found');
-  }
-
-  // const currentDate = moment(new Date()).format('YYYY-MM-DD[T00:00:00.000Z]');
   const currentDate = new Date();
-  const bookedDates = {};
 
-  artisan.bookings.forEach(booking => {
-    if (booking.date >= currentDate) {
-      const day = booking.date.getDate();
-      const month = booking.date.getMonth() + 1;
-      const year = booking.date.getFullYear();
-      if (bookedDates[`${day}/${month}/${year}`]) {
-        bookedDates[`${day}/${month}/${year}`].push(booking.date.getHours())
-      } else {
-        bookedDates[`${day}/${month}/${year}`] = [booking.date.getHours()]
-      }
-    }
-  })
+  const bookedDates = await Booking.find({ artisanId: id, date: {$gte: currentDate}})
+  .select('date').sort('date');
+
   res.status(200).send(bookedDates);
 })
 
@@ -119,12 +102,12 @@ const getBookings = asyncHandler(async (req, res) => {
   if (role === 'user') {
     currentBookings = await Booking.find({userId: req.user._id, date: {$gte: currentDate}})
     .select('-__v')
-    .populate({path: 'artisanId', select: 'first_name last_name profile_picture',
+    .populate({path: 'artisanId', select: 'first_name last_name profile_picture phone gender',
               populate: {path: 'craft location', select: 'name city state'}})
 
     pastBookings = await Booking.find({userId: req.user._id, date: {$lt: currentDate}})
     .select('-__v')
-    .populate({path: 'artisanId', select: 'first_name last_name profile_picture',
+    .populate({path: 'artisanId', select: 'first_name last_name profile_picture phone gender',
               populate: {path: 'craft location', select: 'name city state'}})
 
   }
@@ -132,11 +115,11 @@ const getBookings = asyncHandler(async (req, res) => {
   if (role === 'artisan') {
     currentBookings = await Booking.find({artisanId: req.user._id, date: {$gte: currentDate}})
     .select('-__v')
-    .populate({path: 'userId', select: 'first_name last_name profile_picture'})
+    .populate({path: 'userId', select: 'first_name last_name profile_picture phone gender'})
 
     pastBookings = await Booking.find({artisanId: req.user._id, date: {$lt: currentDate}})
     .select('-__v')
-    .populate({path: 'userId', select: 'first_name last_name profile_picture'})
+    .populate({path: 'userId', select: 'first_name last_name profile_picture phone gender'})
 
   }
   res.status(200).json({currentBookings, pastBookings});

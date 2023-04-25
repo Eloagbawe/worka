@@ -40,7 +40,7 @@ const getCraft = asyncHandler(async (req, res) => {
 
 const getCrafts = asyncHandler(async (req, res) => {
   try {
-    const crafts = await Craft.find().select('-createdAt -updatedAt -__v');
+    const crafts = await Craft.find().select('-createdAt -updatedAt -__v').sort('name');
     res.status(200).json(crafts);
   } catch (err) {
     res.status(400).json({ message: 'An error occurred' });

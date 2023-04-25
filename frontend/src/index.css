@@ -1,0 +1,97 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import 'react-datepicker/dist/react-datepicker';
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+:root {
+  --main-background: #fdfdfd;
+  --text: #0A4D68;
+  --btn-bg: #2E3840;
+  --spinner-bg: rgba(224, 238, 254, 0.7);
+  --spinner-border: #0081C9 #0081C9 #0081C9 transparent;
+}
+
+:root.dark {
+  --main-background: #1f2937;
+  --text: rgba(255, 255, 255, 0.87);
+  --btn-bg: #4E6E81;
+  --spinner-bg: rgba(224, 238, 254, 0.7);
+  --spinner-border: #0A4D68 #0A4D68 #0A4D68 transparent;
+
+}
+
+body {
+  background: var(--main-background);
+  font-family: 'Lato', sans-serif;
+  /* font-family: 'Raleway', sans-serif; */
+}
+
+.MuiMenu-root ul{
+  background-color: var(--main-background);
+  color: var(--text);
+}
+
+.MuiFormControlLabel-label {
+  font-size: 17px;
+}
+
+.loadingSpinnerContainer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: var(--spinner-bg);
+  z-index: 5000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loadingSpinner {
+  width: 64px;
+  height: 64px;
+  border: 3px solid;
+  border-color: var(--spinner-border);
+  border-radius: 50%;
+  animation: spin 1.2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.modal {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -25%);
+  box-shadow: 24px;
+  background-color: var(--main-background);
+}
+
+.react-datepicker__time-list-item--disabled {
+  display: none;
+}
