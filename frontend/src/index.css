@@ -83,6 +83,15 @@ body {
   scrollbar-width: none;  /* Firefox */
 }
 
-/* .react-datepicker__time-list-item--disabled {
+.modal {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -25%);
+  box-shadow: 24px;
+  background-color: var(--main-background);
+}
+
+.react-datepicker__time-list-item--disabled {
   display: none;
-} */
+}
