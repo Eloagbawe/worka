@@ -31,7 +31,7 @@ function App() {
   return (
     <div className="App">
       <ToastContainer autoClose={3000}/>
-        <div className='h-screen'>
+        <div className='min-h-fit'>
         <NavBar/>
 
         <Routes>
@@ -46,8 +46,8 @@ function App() {
           <Route path='*' element={<NotFound/>} />
       </Routes>
 
-      <Footer/>
       </div>
+      <Footer/>
     </div>
   );
 }

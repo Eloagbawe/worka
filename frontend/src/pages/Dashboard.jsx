@@ -94,7 +94,11 @@ export const Dashboard = () => {
   }, [dispatch])
 
   if (isLoading || bookingLoading || reviewLoading) {
-    return (<Spinner/>)
+    return (
+      <div className='min-h-[70vh]'>
+      <Spinner/>
+      </div>
+      )
   }
 
   const capitalize = (word) => {

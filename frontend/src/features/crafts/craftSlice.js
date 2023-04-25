@@ -34,6 +34,10 @@ export const craftSlice = createSlice({
     builder
     .addCase(getCrafts.pending, (state) => {
       state.craftsLoading = true;
+      state.craftsSuccess = false;
+      state.craftsError = false;
+      state.craftsMessage = '';
+
     })
     .addCase(getCrafts.fulfilled, (state, action) => {
       state.craftsLoading = false;

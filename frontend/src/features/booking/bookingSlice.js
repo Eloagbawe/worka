@@ -7,7 +7,10 @@ const initialState = {
   bookingError: false,
   bookingSuccess: false,
   bookingLoading: false,
-  bookingMessage: ''
+  bookingMessage: '',
+  addBookingSuccess: false,
+  addBookingError: false,
+  addBookingMessage: ''
 }
 
 // Add Booking
@@ -76,24 +79,24 @@ export const bookingSlice = createSlice({
     builder
     .addCase(addBooking.pending, (state) => {
       state.bookingLoading = true
-      // state.bookingSuccess = false
-      // state.bookingError = false
-      // state.bookingMessage = ''
+      state.addBookingSuccess = false
+      state.addBookingError = false
+      state.addBookingMessage = ''
     })
     .addCase(addBooking.fulfilled, (state) => {
       state.bookingLoading = false
-      state.bookingSuccess = true
+      state.addBookingSuccess = true
     })
     .addCase(addBooking.rejected, (state, action) => {
       state.bookingLoading = false
-      state.bookingError = true
-      state.bookingMessage = action.payload
+      state.addBookingError = true
+      state.addBookingMessage = action.payload
     })
     .addCase(getBookings.pending, (state) => {
       state.bookingLoading = true
-      // state.bookingSuccess = false
-      // state.bookingError = false
-      // state.bookingMessage = ''
+      state.bookingSuccess = false
+      state.bookingError = false
+      state.bookingMessage = ''
     })
     .addCase(getBookings.fulfilled, (state, action) => {
       state.bookings = action.payload
@@ -123,9 +126,9 @@ export const bookingSlice = createSlice({
     })
     .addCase(deleteBooking.pending, (state) => {
       state.bookingLoading = true
-      // state.bookingSuccess = false
-      // state.bookingError = false
-      // state.bookingMessage = ''
+      state.bookingSuccess = false
+      state.bookingError = false
+      state.bookingMessage = ''
     })
     .addCase(deleteBooking.fulfilled, (state) => {
       state.bookingLoading = false

@@ -37,9 +37,9 @@ export const Profile = () => {
 
 
   const {userProfile, isLoading, isError, message} = useSelector((state) => state.profile)
-  const {bookedDates, bookingSuccess, bookingLoading } = useSelector((state) => state.booking)
+  const {bookedDates,  addBookingSuccess, bookingLoading, addBookingError} = useSelector((state) => state.booking)
   const {user} = useSelector((state) => state.auth)
-  const { reviewSuccess, reviewLoading } = useSelector((state) => state.review)
+  const { reviewSuccess, reviewLoading, reviewError, reviewMessage } = useSelector((state) => state.review)
 
   
   useEffect(() => {
@@ -84,10 +84,28 @@ export const Profile = () => {
   useEffect(() => {
     if (reviewSuccess) {
       toast.success('Review submitted successfully');
-      dispatch(getUser(params.id))
+      dispatch(getUser(params.id));
     }
+
+    if (reviewError) {
+      toast.error(reviewMessage.message);
+    }
+
+    if (addBookingSuccess) {
+      toast.success('Booking was Successful');
+      dispatch(getBookedDates(params.id));
+    }
+
+    if (addBookingError) {
+      toast.error('There was a problem with your booking. Please try again');
+    }
+
+    
     dispatch(resetReview());
-  }, [reviewSuccess, dispatch, params])
+    dispatch(resetBooking())
+  }, [reviewSuccess, dispatch, params,
+  reviewError, reviewMessage, addBookingError,
+  addBookingSuccess])
 
   const closeAddBooking = () => {
     setAddBookingModal(false);
@@ -96,7 +114,6 @@ export const Profile = () => {
   const AddBookingModal = ({open, handleClose}) => {
     const booked_dates = bookedDates.map((booking) => new Date(booking.date).getTime());
     const [startDate, setStartDate] = useState(new Date());
-    // const [selectedDate, setSelectedDate] = useState(null);
 
     const isnotSunday = (date) => {
       const day = (date).getDay();
@@ -116,12 +133,17 @@ export const Profile = () => {
 
     const filterTime = (time) => {
       const selectedDate = new Date(time);
-      return !(booked_dates.includes(selectedDate.getTime()))
+      let currentDate = new Date();
+
+      const isBooked = booked_dates.includes(selectedDate.getTime());
+      const canBeBooked = selectedDate.getTime() > currentDate.getTime();
+      return (!isBooked && canBeBooked)    
     };
 
     const onSubmit = (e) => {
       e.preventDefault();
 
+      
       if ((startDate.getHours() < 10) || (startDate.getHours() > 16)) {
         toast.error('Booking times are from 10am to 4pm');
         return;
@@ -131,21 +153,25 @@ export const Profile = () => {
         toast.error('No booking on a sunday');
         return;
       }
+
+      if (new Date().getTime() > startDate.getTime()) {
+        toast.error('Please select a valid date and time');
+        return;
+      }
+      
+      startDate.setMinutes(0);
+      startDate.setSeconds(0);
+      startDate.setMilliseconds(0);
       const selectedDate = {date: startDate}
 
+      
       const data = {
         id: params.id,
         data: selectedDate
       }
 
-      dispatch(addBooking(data)).then(() => {
-        if (bookingSuccess) {
-          toast.success('Booking was Successful');
-          dispatch(getUser(params.id));
-          dispatch(getBookedDates(params.id));
-        }
-      })
-      setAddBookingModal(false)
+      dispatch(addBooking(data));
+      setAddBookingModal(false);
 
     }
     return (
@@ -213,13 +239,7 @@ export const Profile = () => {
         }
       }
 
-      dispatch(add_review(reviewData))
-      // dispatch(add_review(reviewData)).then(() => {
-      //   if (reviewSuccess) {
-      //     toast.success('Review Successfully Submitted');
-      //     dispatch(getUser(params.id))
-      //   }
-      // })
+      dispatch(add_review(reviewData));
       setAddReviewModal(false);
     }
 
@@ -258,21 +278,19 @@ export const Profile = () => {
       </Modal>
     )
   }
-
-  // const closeEditReview = () => {
-  //   setEditReviewModal(false);
-  // }
-
   
 
   const capitalize = (word) => {
     return word.charAt(0).toUpperCase() + word.slice(1)
   }
 
-  // console.log(userProfile)
-  // console.log(bookedDates)
+  
   if (isLoading || reviewLoading || bookingLoading) {
-    return (<Spinner/>)
+    return (
+      <div className='min-h-[70vh]'>
+      <Spinner/>
+      </div>
+      )
   }
   return (
     <>

@@ -129,7 +129,11 @@ export const CreateUserAccount = () => {
   }
 
   if (isLoading) {
-    return (<Spinner/>)
+    return (
+      <div className='min-h-[70vh]'>
+      <Spinner/>
+      </div>
+      )
   }
 
   return (

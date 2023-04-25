@@ -160,7 +160,11 @@ export const Search = () => {
   }
   
   if (searchLoading) {
-    return (<Spinner/>)
+    return (
+      <div className='min-h-[70vh]'>
+      <Spinner/>
+      </div>
+      )
   }
   return (
     <div className='text-text-color mt-10'>

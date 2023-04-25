@@ -172,7 +172,11 @@ export const CreateArtisanAccount = () => {
   }
 
   if (isLoading || craftsLoading || locationsLoading) {
-    return (<Spinner/>)
+    return (
+      <div className='min-h-[70vh]'>
+      <Spinner/>
+      </div>
+      )
   }
 
   return (
