@@ -19,7 +19,7 @@ import MenuItem from '@mui/material/MenuItem';
 export const NavBar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [theme, setTheme] = useState(null);
+  const [theme, setTheme] = useState('light');
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const path = useLocation().pathname
