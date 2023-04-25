@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { toggleDarkTheme } from '../_helpers/set_theme';
+import { toggleDarkTheme, addDarkTheme } from '../_helpers/set_theme';
 import { BsSun, BsMoonFill } from 'react-icons/bs';
 import { FaAlignJustify } from 'react-icons/fa';
 import { IconContext } from "react-icons";
@@ -38,9 +38,10 @@ export const NavBar = () => {
   useEffect(() => {
     const mode = localStorage.getItem('theme');  
     if ((mode === 'dark') || (!mode && window.matchMedia("(prefers-color-scheme: dark)").matches)){
-      setTheme('dark')
+      addDarkTheme();
+      setTheme('dark');
     } else {
-      setTheme('light')
+      setTheme('light');
     }
   }, [])
 
