@@ -175,7 +175,7 @@ export const Profile = () => {
 
     }
     return (
-      <Modal  open={open} handleClose={handleClose} className={'w-[95%] sm:w-7/12 lg:w-4/12 h-[35rem] text-center'}>
+      <Modal  open={open} handleClose={handleClose} className={'w-[95%] sm:w-7/12 lg:w-4/12 text-center'}>
         <div className='flex flex-wrap items-center justify-center'>
           <h3 className='font-bold text-lg mr-3'>Add Booking</h3>
           <FaRegCalendarAlt/>
