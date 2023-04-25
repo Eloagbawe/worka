@@ -44,7 +44,7 @@ export const Dashboard = () => {
 
   const { user } = useSelector((state) => state.auth);
   const { profile, isLoading, isSuccess, isError, message} = useSelector((state) => state.profile)
-  const { bookings, bookingLoading, bookingSuccess, bookingError, bookingMessage } = useSelector((state) => state.booking);
+  const { bookings, bookingLoading, bookingSuccess } = useSelector((state) => state.booking);
   const { reviewSuccess, reviewLoading } = useSelector((state) => state.review)
 
 
