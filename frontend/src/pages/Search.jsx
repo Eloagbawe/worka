@@ -167,7 +167,7 @@ export const Search = () => {
       )
   }
   return (
-    <div className='text-text-color mt-10'>
+    <div className='text-text-color my-10'>
 
       {
         <div className='flex justify-center'>

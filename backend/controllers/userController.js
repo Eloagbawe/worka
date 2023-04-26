@@ -314,8 +314,7 @@ const getProfile = asyncHandler(async (req, res) => {
 
 const searchArtisan = asyncHandler(async (req, res) => {
   const { page=1, craftId, locationId } = req.query;
-  // const { craftId, locationId } = req.body;
-  const limit = 8;
+  const limit = 4;
 
   const { role } = req.user;
 

@@ -182,7 +182,8 @@ export const CreateArtisanAccount = () => {
   return (
     <div className='flex px-3 justify-center text-text-color'>
     <div className='sm:w-1/2 xl:w-2/5'>
-      <h2 className='text-center font-bold text-[2rem] mb-5'>Create an Artisan account</h2>
+      <h2 className='text-center font-bold text-[2rem] my-5'>Create an Artisan account</h2>
+      <p className='my-5'>*Nb: All Fields are compulsory</p>
       <form className='w-full' id="createArtisanForm" onSubmit={handleSubmit}>
         <h3 className='font-bold my-2'>Personal Details</h3>
         <div className='border rounded p-1 my-5'>
@@ -221,7 +222,8 @@ export const CreateArtisanAccount = () => {
 
         <div className='flex items-center my-10'>
           <label htmlFor="profile_picture" className={`${isProfilePicPicked ? 'hidden' : '' } mr-2`}><FaUpload /></label>
-          <label htmlFor="profile_picture" className={`${isProfilePicPicked ? 'hidden' : '' }`}>Upload Profile Picture</label>
+          <label htmlFor="profile_picture" className={`${isProfilePicPicked ? 'hidden' : '' }`}>
+            Upload Profile Picture <span className='font-light text-sm ml-1'>Nb: Image size must be less than 1mb</span></label>
           <input type="file" id="profile_picture" name="profile_picture" className={`${isProfilePicPicked ? '' : 'hidden'} file-type`}
           accept=".jpg, .jpeg, .png, .svg, .webp" 
           onChange={handleFileChange} />

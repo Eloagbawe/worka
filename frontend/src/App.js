@@ -10,6 +10,8 @@ import { Search } from './pages/Search';
 import { Dashboard } from './pages/Dashboard';
 import { Profile } from './pages/Profile';
 import { NotFound } from './pages/NotFound';
+import { ContactUs } from './pages/ContactUs';
+import { About } from './pages/About';
 
 import { addDarkTheme } from './_helpers/set_theme';
 import { useEffect } from 'react';
@@ -43,6 +45,9 @@ function App() {
           <Route path='/search' element={<Search/>} />
           <Route path='/dashboard' element={<Dashboard/>} />
           <Route path='/profile/:id' element={<Profile/>} />
+          <Route path='/contact' element={<ContactUs/>} />
+          <Route path='/about' element={<About/>} />
+
           <Route path='*' element={<NotFound/>} />
       </Routes>
 

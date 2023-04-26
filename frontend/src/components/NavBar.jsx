@@ -76,7 +76,7 @@ export const NavBar = () => {
   }
   
   return (
-    <div className='flex px-3 sm:px-8 py-4 items-center justify-between'>
+    <div className='flex px-3 sm:px-8 py-4 items-center justify-between max-lg:mt-5'>
       <div className='flex items-center'>
        <div className=''>
       <Button
@@ -126,14 +126,14 @@ export const NavBar = () => {
         }}
       >
         {path !== '/' && <Link to="/"><MenuItem>Home</MenuItem></Link>}
-        <MenuItem>About</MenuItem>
-        <MenuItem>Contact us</MenuItem>
+        {path !== '/about' && <Link to="/about"><MenuItem>About</MenuItem></Link>}
+        {path !== '/contact' && <Link to="/contact"><MenuItem>Contact us</MenuItem></Link>}
         {user && user.role === 'user' && path !=='/search' && <Link to="/search"><MenuItem>Search</MenuItem></Link>}
         <MenuItem>Blog</MenuItem>
 
         {user ? (
           <div className='min-[500px]:hidden mb-3'>
-          {path !== '/dashboard' && <Link to="/dashboard"><button className="ml-2 px-3 py-2 block rounded bg-[#EA5455] text-white font-bold">Dashboard</button></Link>}
+          {path !== '/dashboard' && <Link to="/dashboard"><button className="ml-1.5 px-2 py-2 block rounded bg-[#EA5455] text-white font-bold">Dashboard</button></Link>}
           <button onClick={onLogout} className="ml-2 px-3 py-2 block font-bold text-text-color">Log out</button>
           </div>
         ) : (
@@ -159,8 +159,8 @@ export const NavBar = () => {
 
       <div className='hidden lg:block'>
         {path !== '/' && <Link to="/" className='mr-6 text-text-color font-bold'>Home</Link>}
-        <Link to="" className='mr-6 text-text-color font-bold'>About</Link>
-        <Link to="" className='mr-6 text-text-color font-bold'>Contact us</Link>
+        {path !=='/about' && <Link to="/about" className='mr-6 text-text-color font-bold'>About</Link>}
+        {path !== '/contact' && <Link to="/contact" className='mr-6 text-text-color font-bold'>Contact us</Link>}
         {user && user.role === 'user' && path !== '/search' && <Link to="/search" className='mr-6 text-text-color font-bold'>Search</Link>}
         <Link href="" className='mr-6 text-text-color font-bold'>Blog</Link>
       </div>
