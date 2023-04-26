@@ -2,7 +2,7 @@
 
 Worka is a web app that helps find artisans around you.
 
-[Hosted Url]('https://worka-main.netlify.app/')
+[Hosted Url](https://worka-main.netlify.app/)
 
 **Installation**
 
@@ -22,7 +22,7 @@ Worka is a web app that helps find artisans around you.
 **Usage**
 
         open localhost:3000 in your browser to interact with the app.
-        Create an account, view your dashboard and add an itinerary.
+        Create an account, search for artisans and view their profiles.
 
 **Author**
 
