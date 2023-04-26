@@ -182,8 +182,8 @@ export const CreateArtisanAccount = () => {
   return (
     <div className='flex px-3 justify-center text-text-color'>
     <div className='sm:w-1/2 xl:w-2/5'>
-      <h2 className='text-center font-bold text-[2rem] mb-5'>Create an Artisan account</h2>
-      <p className='mb-5'>*Nb: All Fields are compulsory</p>
+      <h2 className='text-center font-bold text-[2rem] my-5'>Create an Artisan account</h2>
+      <p className='my-5'>*Nb: All Fields are compulsory</p>
       <form className='w-full' id="createArtisanForm" onSubmit={handleSubmit}>
         <h3 className='font-bold my-2'>Personal Details</h3>
         <div className='border rounded p-1 my-5'>
