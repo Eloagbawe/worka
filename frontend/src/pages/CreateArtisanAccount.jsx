@@ -222,7 +222,8 @@ export const CreateArtisanAccount = () => {
 
         <div className='flex items-center my-10'>
           <label htmlFor="profile_picture" className={`${isProfilePicPicked ? 'hidden' : '' } mr-2`}><FaUpload /></label>
-          <label htmlFor="profile_picture" className={`${isProfilePicPicked ? 'hidden' : '' }`}>Upload Profile Picture</label>
+          <label htmlFor="profile_picture" className={`${isProfilePicPicked ? 'hidden' : '' }`}>
+            Upload Profile Picture <span className='font-light text-sm ml-1'>Nb: Image size must be less than 1mb</span></label>
           <input type="file" id="profile_picture" name="profile_picture" className={`${isProfilePicPicked ? '' : 'hidden'} file-type`}
           accept=".jpg, .jpeg, .png, .svg, .webp" 
           onChange={handleFileChange} />
